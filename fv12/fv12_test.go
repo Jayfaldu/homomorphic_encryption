@@ -6,8 +6,43 @@ import (
 	"math/rand"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
+func TestInitModsPanicsPlainTextCipherTextDifferenceLess(t *testing.T) {
+	rand.Seed(time.Now().UnixNano())
+	ciphertext_modulus := int(math.Pow(2, 19))
+	plaintext_modulus := int(math.Pow(2, 15))
+	extra_mod := int(math.Pow(2, 40))
+	poly_deg := int(math.Pow(2, 4) - 1)
+
+	poly_mod := poly.ZeroPoly(int(poly_deg) + 1)
+	poly_mod.SetElem(1, poly_deg+1)
+	poly_mod.SetElem(1, 0)
+
+	assert.Panics(t, func() {
+		InitMods(ciphertext_modulus, plaintext_modulus, extra_mod,
+			poly_mod)
+	})
+}
+
+func TestInitModsPanicsCipherTextExraModOutOfBounds(t *testing.T) {
+	rand.Seed(time.Now().UnixNano())
+	ciphertext_modulus := int(math.Pow(2, 25))
+	plaintext_modulus := int(math.Pow(2, 15))
+	extra_mod := int(math.Pow(2, 40))
+	poly_deg := int(math.Pow(2, 4) - 1)
+
+	poly_mod := poly.ZeroPoly(int(poly_deg) + 1)
+	poly_mod.SetElem(1, poly_deg+1)
+	poly_mod.SetElem(1, 0)
+
+	assert.Panics(t, func() {
+		InitMods(ciphertext_modulus, plaintext_modulus, extra_mod,
+			poly_mod)
+	})
+}
 func TestEncryptDecrypt(t *testing.T) {
 	rand.Seed(time.Now().UnixNano())
 	ciphertext_modulus := int(math.Pow(2, 19))
@@ -23,7 +58,7 @@ func TestEncryptDecrypt(t *testing.T) {
 		poly_mod)
 	pk, sk := fv12_instance.Keygen()
 
-	val_to_encrypt := 123
+	val_to_encrypt := rand.Intn(plaintext_modulus - 1)
 	ct1 := fv12_instance.Encrypt(pk, val_to_encrypt)
 	decrypted_val := fv12_instance.Decrypt(ct1, sk)
 
@@ -47,8 +82,8 @@ func TestAddCipher(t *testing.T) {
 		poly_mod)
 	pk, sk := fv12_instance.Keygen()
 
-	val1 := 45
-	val2 := 33
+	val1 := rand.Intn(plaintext_modulus - 2)
+	val2 := rand.Intn(plaintext_modulus - val1)
 	ct1 := fv12_instance.Encrypt(pk, val1)
 	ct2 := fv12_instance.Encrypt(pk, val2)
 	added_ct := fv12_instance.AddCipher(ct1, ct2)
