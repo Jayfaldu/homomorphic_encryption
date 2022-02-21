@@ -21,6 +21,15 @@ Argument :
 */
 func InitMods(ciphertext_mod, plaintext_mod, extra_mod int,
 	poly_mod poly.Poly) Fv12 {
+
+	if plaintext_mod*(1<<5) >= ciphertext_mod {
+		panic("The difference between plain text mod and cipher text mod is less.This scheme is may give erroneous result")
+	}
+
+	if float64(ciphertext_mod)*float64(extra_mod) >= (1 << 64) {
+		panic("new modulus required for multiplication of polynomial may go out of bounds")
+	}
+
 	return Fv12{
 		ciphertext_mod: ciphertext_mod,
 		plaintext_mod:  plaintext_mod,
@@ -54,6 +63,10 @@ Returns :
 		Ciphered Text for the given value
 */
 func (p Fv12) Encrypt(public_key []poly.Poly, value int) []poly.Poly {
+
+	// if (value >= p.plaintext_mod) {
+	// 	panic("Value is greater than plain text mod returned value encrypted value will not be the same")
+	// }
 
 	text_poly := poly.ZeroPoly(p.deg - 1)
 	_ = text_poly.SetElem(value, p.deg-1)

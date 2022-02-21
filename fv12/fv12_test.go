@@ -10,8 +10,8 @@ import (
 
 func TestEncryptDecrypt(t *testing.T) {
 	rand.Seed(time.Now().UnixNano())
-	ciphertext_modulus := int(math.Pow(2, 15))
-	plaintext_modulus := int(math.Pow(2, 10))
+	ciphertext_modulus := int(math.Pow(2, 19))
+	plaintext_modulus := int(math.Pow(2, 12))
 	extra_mod := int(math.Pow(2, 40))
 	poly_deg := int(math.Pow(2, 4) - 1)
 

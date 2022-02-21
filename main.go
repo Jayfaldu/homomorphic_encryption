@@ -11,10 +11,10 @@ import (
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	ciphertext_modulus := int(math.Pow(2, 17))
-	plaintext_modulus := int(math.Pow(2, 10))
+	ciphertext_modulus := int(math.Pow(2, 19))
+	plaintext_modulus := int(math.Pow(2, 12))
 	extra_mod := int(math.Pow(2, 40))
-	poly_deg := int(math.Pow(2, 4) - 1)
+	poly_deg := int(math.Pow(2, 5) - 1)
 
 	poly_mod := poly.ZeroPoly(int(poly_deg) + 1)
 	poly_mod.SetElem(1, poly_deg+1)
@@ -22,8 +22,8 @@ func main() {
 
 	fv12_instance := fv12.InitMods(ciphertext_modulus, plaintext_modulus, extra_mod, poly_mod)
 
-	plain_val1 := 33
-	plain_val2 := 22
+	plain_val1 := 29
+	plain_val2 := 32
 
 	pk, sk := fv12_instance.Keygen()
 
